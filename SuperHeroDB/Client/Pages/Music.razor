@@ -1,0 +1,23 @@
+﻿@page "/Music/{id:guid}"
+@inject IMusicService MusicService
+
+@if (music == null)
+{
+    <span>music is loading...</span>
+}
+else
+{
+    <h3>This is @music.Name</h3>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    SuperHeroDB.Shared.Music music = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        music = await MusicService.GetMusic(Id);
+    }
+}

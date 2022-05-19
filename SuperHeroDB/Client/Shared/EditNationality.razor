@@ -1,0 +1,47 @@
+﻿@inject IMusicService MusicService
+@inject IJSRuntime JSRuntime
+
+@if (Nationality.Id == Guid.Empty)
+{
+    <h3>Create a new Nationality</h3>
+}
+else
+{
+    <h3>Edit '@Nationality.Name'</h3>
+}
+
+<EditForm Model="Nationality" OnSubmit="HandleSubmit">
+    <div class="form-group">
+        <label>Name</label>
+        <InputText @bind-Value="Nationality.Name" class="form-control"></InputText>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public SuperHeroDB.Shared.Nationality NationalityToEdit { get; set; }
+
+    [Parameter]
+    public SuperHeroDB.Shared.Nationality Nationality { get; set; } = new SuperHeroDB.Shared.Nationality();
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+
+    async void HandleSubmit()
+    {
+
+        await JSRuntime.InvokeVoidAsync("console.log", Nationality);
+
+        if (Nationality.Id == Guid.Empty)
+        {
+            await MusicService.CreateNationality(Nationality);
+        }
+        else
+        {
+            await MusicService.UpdateNationality(Nationality, Nationality.Id);
+        }
+
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page "/Geners"
+@inject IMusicService MusicService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<h3>Geners</h3>
+
+@if (MusicService.Geners.Count == 0)
+{
+<span>Loading Geners...</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var gener in MusicService.Geners)
+            {
+                <tr>
+                    <td>@gener.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => ShowGener(gener.Id))">Show</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditGener(gener.Id))">Edit</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => DeleteGener(gener.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<EditGener Gener="GenerToEdit"></EditGener>
+
+@code {
+    SuperHeroDB.Shared.Gener GenerToEdit = new SuperHeroDB.Shared.Gener();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await MusicService.GetGeners();
+        MusicService.OnChange += StateHasChanged;
+    }
+
+    void ShowGener(int id)
+    {
+        NavigationManager.NavigateTo($"Gener/{id}");
+    }
+
+    void EditGener(int id)
+    {
+        GenerToEdit = MusicService.Geners.Find(h => h.Id == id);
+    }
+
+    void DeleteGener(int id)
+    {
+        MusicService.DeleteGener(id);
+    }
+
+    public void Dispose()
+    {
+        MusicService.OnChange -= StateHasChanged;
+    }
+}

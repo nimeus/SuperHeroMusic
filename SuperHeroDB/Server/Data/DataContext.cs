@@ -30,5 +30,12 @@ namespace SuperHeroDB.Server.Data
         public DbSet<SuperHero> SuperHeroes { get; set; }
 
         public DbSet<Comic> Comics { get; set; }
+
+        //Music
+        public DbSet<Music> Music { get; set; }
+        public DbSet<MusicInformation> MusicInformation { get; set; }
+        public DbSet<Singer> Singer { get; set; }
+        public DbSet<Gener> Gener { get; set; }
+        public DbSet<Nationality> Nationality { get; set; }
     }
 }

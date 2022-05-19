@@ -1,0 +1,73 @@
+﻿@page "/Nationalities"
+@inject IMusicService MusicService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<h3>Super Nationalities</h3>
+
+@if (MusicService.Nationalities.Count == 0)
+{
+    <span>Loading Nationalities...</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Nationality in MusicService.Nationalities)
+            {
+                <tr>
+                    <td>@Nationality.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => ShowNationality(Nationality.Id))">Show</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditNationality(Nationality.Id))">Edit</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => DeleteNationality(Nationality.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<EditNationality Nationality="NationalityToEdit"></EditNationality>
+
+@code {
+    SuperHeroDB.Shared.Nationality NationalityToEdit = new SuperHeroDB.Shared.Nationality();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await MusicService.GetNationalities();
+        MusicService.OnChange += StateHasChanged;
+    }
+
+    void ShowNationality(Guid id)
+    {
+        NavigationManager.NavigateTo($"Nationality/{id}");
+    }
+
+    void EditNationality(Guid id)
+    {
+        NationalityToEdit = MusicService.Nationalities.Find(h => h.Id == id);
+    }
+
+    void DeleteNationality(Guid id)
+    {
+        MusicService.DeleteNationality(id);
+    }
+
+    public void Dispose()
+    {
+        MusicService.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,47 @@
+﻿@inject IMusicService MusicService
+@inject IJSRuntime JSRuntime
+
+@if (!(Gener.Id > 0))
+{
+    <h3>Create a new Gener</h3>
+}
+else
+{
+    <h3>Edit '@Gener.Name'</h3>
+}
+
+<EditForm Model="Gener" OnSubmit="HandleSubmit">
+    <div class="form-group">
+        <label>Name</label>
+        <InputText @bind-Value="Gener.Name" class="form-control"></InputText>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public SuperHeroDB.Shared.Gener GenerToEdit { get; set; }
+
+    [Parameter]
+    public SuperHeroDB.Shared.Gener Gener { get; set; } = new SuperHeroDB.Shared.Gener();
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+
+    async void HandleSubmit()
+    {
+
+        await JSRuntime.InvokeVoidAsync("console.log", Gener);
+
+        if (!(Gener.Id > 0))
+        {
+            await MusicService.CreateGener(Gener);
+        }
+        else
+        {
+            await MusicService.UpdateGener(Gener, Gener.Id);
+        }
+
+    }
+}

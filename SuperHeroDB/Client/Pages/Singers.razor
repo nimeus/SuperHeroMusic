@@ -1,0 +1,73 @@
+﻿@page "/Singers"
+@inject IMusicService MusicService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<h3>Super Singers</h3>
+
+@if (MusicService.Singers.Count == 0)
+{
+    <span>Loading Singers...</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Singer in MusicService.Singers)
+            {
+                <tr>
+                    <td>@Singer.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => ShowSinger(Singer.Id))">Show</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditSinger(Singer.Id))">Edit</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => DeleteSinger(Singer.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<EditSinger Singer="SingerToEdit"></EditSinger>
+
+@code {
+    SuperHeroDB.Shared.Singer SingerToEdit = new SuperHeroDB.Shared.Singer();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await MusicService.GetSingers();
+        MusicService.OnChange += StateHasChanged;
+    }
+
+    void ShowSinger(Guid id)
+    {
+        NavigationManager.NavigateTo($"Singer/{id}");
+    }
+
+    void EditSinger(Guid id)
+    {
+        SingerToEdit = MusicService.Singers.Find(h => h.Id == id);
+    }
+
+    void DeleteSinger(Guid id)
+    {
+        MusicService.DeleteSinger(id);
+    }
+
+    public void Dispose()
+    {
+        MusicService.OnChange -= StateHasChanged;
+    }
+}

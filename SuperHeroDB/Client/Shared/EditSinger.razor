@@ -1,0 +1,47 @@
+﻿@inject IMusicService MusicService
+@inject IJSRuntime JSRuntime
+
+@if (Singer.Id == Guid.Empty)
+{
+    <h3>Create a new Singer</h3>
+}
+else
+{
+    <h3>Edit '@Singer.Name'</h3>
+}
+
+<EditForm Model="Singer" OnSubmit="HandleSubmit">
+    <div class="form-group">
+        <label>Name</label>
+        <InputText @bind-Value="Singer.Name" class="form-control"></InputText>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public SuperHeroDB.Shared.Singer SingerToEdit { get; set; }
+
+    [Parameter]
+    public SuperHeroDB.Shared.Singer Singer { get; set; } = new SuperHeroDB.Shared.Singer();
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+
+    async void HandleSubmit()
+    {
+
+        await JSRuntime.InvokeVoidAsync("console.log", Singer);
+
+        if (Singer.Id == Guid.Empty)
+        {
+            await MusicService.CreateSinger(Singer);
+        }
+        else
+        {
+            await MusicService.UpdateSinger(Singer, Singer.Id);
+        }
+
+    }
+}

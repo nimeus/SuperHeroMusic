@@ -36,8 +36,8 @@ else
 </EditForm>
 
 @code {
-    //[Parameter]
-    //public SuperHeroDB.Shared.SuperHero HeroToEdit { get; set; }
+    [Parameter]
+    public SuperHeroDB.Shared.SuperHero HeroToEdit { get; set; }
 
     [Parameter]
     public SuperHeroDB.Shared.SuperHero Hero { get; set; } = new SuperHeroDB.Shared.SuperHero();

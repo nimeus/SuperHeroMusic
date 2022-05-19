@@ -1,0 +1,77 @@
+﻿@page "/Musics"
+@inject IMusicService MusicService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<h3>Super Musics</h3>
+
+@if (MusicService.Musics.Count == 0)
+{
+    <span>Loading Musics...</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Image</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var music in MusicService.Musics)
+            {
+                <tr>
+                    <td>@music.Name</td>
+                    <td>@music.MusicAddress</td>
+                    <td>@music.PictureAddress</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => ShowMusic(music.Id))">Show</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditMusic(music.Id))">Edit</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => DeleteMusic(music.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<EditMusic Music="MusicToEdit"></EditMusic>
+
+@code {
+    SuperHeroDB.Shared.Music MusicToEdit = new SuperHeroDB.Shared.Music();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await MusicService.GetMusics();
+        MusicService.OnChange += StateHasChanged;
+    }
+
+    void ShowMusic(Guid id)
+    {
+        NavigationManager.NavigateTo($"Music/{id}");
+    }
+
+    void EditMusic(Guid id)
+    {
+        MusicToEdit = MusicService.Musics.Find(h => h.Id == id);
+    }
+
+    void DeleteMusic(Guid id)
+    {
+        MusicService.DeleteMusic(id);
+    }
+
+    public void Dispose()
+    {
+        MusicService.OnChange -= StateHasChanged;
+    }
+}
