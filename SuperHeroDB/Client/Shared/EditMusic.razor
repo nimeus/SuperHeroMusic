@@ -1,5 +1,7 @@
 ﻿@inject IMusicService MusicService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<EditMusic> Localizer
+@using BootstrapBlazor.Components;
 
 @if (Music.Id == Guid.Empty)
 {
@@ -23,15 +25,22 @@ else
         <label>Picture Address</label>
         <InputText @bind-Value="Music.PictureAddress" class="form-control"></InputText>
     </div>
+
+    <p>In this example, the search callback delegate method is set <code>onSearchTextChanged</code> to customize search results if the display text is used internally to make a fuzzy match when not set</p>
+
+    @*<MultiSelect Items="@ItemSingers" @bind-Value="@SingersValue" ShowSearch="true" OnSearchTextChanged="@OnSearch"></MultiSelect>*@
+
+
+
     @*<div class="form-group">
-        <label>Comic</label><br />
-        <InputRadioGroup @bind-Value="music.MusicInformation.Singers" class="form-control">
-            @foreach (var comic in MusicService.Singers)
-            {
-                <InputRadio Value="@comic.Id" /><span style="padding-left: 5px;">@comic.Name</span><br />
-            }
-        </InputRadioGroup>
-    </div>*@
+            <label>Comic</label><br />
+            <InputRadioGroup @bind-Value="music.MusicInformation.Singers" class="form-control">
+                @foreach (var comic in MusicService.Singers)
+                {
+                    <InputRadio Value="@comic.Id" /><span style="padding-left: 5px;">@comic.Name</span><br />
+                }
+            </InputRadioGroup>
+        </div>*@
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
 
@@ -41,13 +50,34 @@ else
 
     [Parameter]
     public SuperHeroDB.Shared.Music Music { get; set; } = new SuperHeroDB.Shared.Music();
+
+
+    public List<SelectedItem> ItemSingers { get; set; } = new List<SelectedItem>();
+
+
     int comicId = 1;
+
+    private string SingersValue { get; set; } = "";
+
+
+    private static List<SelectedItem> GenerateDataSource(List<Singer> source)
+    {
+        return source.Select(i => new SelectedItem(i.Id.ToString(), i.Name)).ToList();
+    }
+
 
     protected override async Task OnParametersSetAsync()
     {
-        //await MusicService.GetComics();
+        await MusicService.GetSingers();
+        ItemSingers = GenerateDataSource(MusicService.Singers);
         //comicId = music.ComicId;
     }
+
+    private List<SelectedItem> OnSearch(string searchText)
+    {
+        return GenerateDataSource(MusicService.Singers.Where(i => i.Name.Contains(searchText, System.StringComparison.OrdinalIgnoreCase)).ToList());
+    }
+
 
     async void HandleSubmit()
     {

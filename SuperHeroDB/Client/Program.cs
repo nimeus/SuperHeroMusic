@@ -22,6 +22,7 @@ namespace SuperHeroDB.Client
 
             builder.Services.AddScoped<ISuperHeroService, SuperHeroService>();
             builder.Services.AddScoped<IMusicService, MusicService>();
+            builder.Services.AddLocalization();
 
             await builder.Build().RunAsync();
         }
